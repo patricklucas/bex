@@ -41,7 +41,7 @@
               <!-- Search bar -->
               <div class="input-group">
                 <form method="post" action="recommend">
-                <input type="text" class="form-control" name="beer_input">
+                <input id="beer-input-box" type="text" class="form-control" name="beer_input">
                   <!-- <span class="input-group-btn"> -->
                   <br><br>
                   <input type=submit>
@@ -68,6 +68,25 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../static/js/bootstrap.min.js"></script>
+
+    <script>
+    (function() {
+        var beerInputBox = $("input#beer-input-box");
+
+        beerInputBox.change(function(e) {
+            var request = $.getJSON("/suggest", { input: beerInputBox.val() });
+
+            request.done(function(json) {
+                var suggestions = json["suggestions"];
+
+                console.log("Here are your " + suggestions.length + " suggestions:");
+                $.each(suggestions, function(index, suggestion) {
+                    console.log(" - " + suggestion.name + " from " + suggestion.brewery + " (" + suggestion.id + ")");
+                });
+            })
+        });
+    })();
+    </script>
 
 </body>
 

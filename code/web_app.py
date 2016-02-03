@@ -1,9 +1,13 @@
+from collections import namedtuple
+
 import numpy as np
 import pandas as pd
 import graphlab as gl
-from flask import Flask
-from flask import render_template
-from flask import Flask, request
+from flask import Flask, abort, jsonify, render_template, request
+
+Suggestion = namedtuple('Suggestion', ['brewery', 'name', 'id'])
+
+
 app = Flask(__name__)
 
 '''
@@ -17,6 +21,7 @@ todo
 @app.route("/")
 def main():
     return render_template('index.html')
+
 
 @app.route("/recommend", methods=['POST'])
 def recommend():
@@ -35,6 +40,25 @@ def recommend():
                 .replace('border="1" class="dataframe"','class=table table-hover')
 
     return render_template('index.html', recommend=True, beer_recs=beer_recs)
+
+
+@app.route("/suggest")
+def suggest():
+        user_input = request.args.get("input")
+        if not user_input:
+            return abort(400)
+
+        suggestions = [
+            Suggestion("Russian River Brewing", "Pliny the Elder", 12345),
+            Suggestion("Russian River Brewing", "Pliny the Younger", 54321),
+            Suggestion("Ballast Point Brewing", "Sculpin", 3333),
+        ]
+
+        suggestions_dict = [suggestion._asdict() for suggestion in suggestions]
+
+        return jsonify(
+            suggestions=suggestions_dict,
+        )
 
 
 if __name__ == "__main__":
